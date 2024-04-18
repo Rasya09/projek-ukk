@@ -1,0 +1,106 @@
+.container {
+    display: flex;
+    margin-top: 12px;
+    width: 12%;
+}
+
+.card-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.card {
+    /* width: 260px; */
+    display: inline-flex;
+    flex-direction: column;
+    position: relative;
+    padding: 10px;
+    border-radius: 8px;
+    /* align-items: center; */
+}
+
+.card:hover {
+    background-color: #efefef;
+}
+
+.card img {
+    width: 260px;
+    border-radius: 8px;
+}
+
+.card .overlay img {
+    width: 20px;
+    background-color: #efefef;
+    padding: 10px;
+    border-radius: 20px;
+    margin-left: 10px;
+    margin-right: 116px;
+}
+
+.card .overlay p {
+    background-color: #bd081d;
+    font-weight: bold;
+    color: white;
+    padding: 6px;
+    border-radius: 5px;
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-bottom img {
+    width: 10px;
+    margin-right: 14px;
+    align-self: center;
+}
+
+.card-bottom p {
+    font-weight: 900;
+    color: black;
+    font-size: 14px;
+    margin-bottom: 0px;
+}
+
+.bottom-float {
+    font-weight: bold;
+    position: fixed;
+    bottom: 6px;
+    right: 20px;
+}
+
+.float-icon {
+    width: 22px;
+    height: 28px;
+    font-size: 20px;
+    background-color: #efefef;
+    padding: 0px;
+    padding-left: 9px;
+    border-radius: 20px;
+}
+
+.card-username {
+    display: flex;
+    align-items: center;
+}
+.card-username img {
+    margin-right: 9px;
+    max-height: 30px;
+    max-width: 30px;
+}
+
+#privacy {
+    width: 55px;
+    font-size: 13px;
+    border-radius: 6px;
+    padding-top: 4px;
+}
+
+@media screen and (min-width: 1145px) {
+    .card-container {
+        height: 190vh;
+        width: 100vw;
+    }
+}

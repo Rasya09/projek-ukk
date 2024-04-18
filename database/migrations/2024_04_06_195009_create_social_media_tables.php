@@ -27,6 +27,7 @@ return new class extends Migration
             $table->id();
             $table->string('namaAlbum');
             $table->dateTime('tanggaldibuat');
+            $table->string('deskripsi')->nullable();;
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();

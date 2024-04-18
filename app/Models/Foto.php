@@ -34,4 +34,10 @@ class Foto extends Model
     {
         return $this->belongsToMany(User::class, 'save_photos', 'photo_id', 'user_id')->withTimestamps();
     }
+
+    // Method untuk memeriksa apakah foto ini sudah dilike oleh pengguna tertentu
+    public function isLikedBy($userId)
+    {
+        return $this->likes()->where('userid', $userId)->exists();
+    }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Album;
 use App\Models\Foto;
+use App\Models\KomentarFoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +19,12 @@ class FotoController extends Controller
 
     public function create()
     {
-        return view('page.tambah_foto');
+        if (auth()->check()) {
+            return view('page.tambah_foto');
+        } else {
+            // Jika pengguna belum login, redirect ke halaman login
+            return redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu.');
+        }
     }
 
     public function store(Request $request)
@@ -53,7 +60,8 @@ class FotoController extends Controller
     {
         $photo = Foto::findOrFail($id);
         $user = $photo->user; // Mengambil informasi pengguna yang terkait dengan foto
-        return view('componens.detail-foto', compact('photo', 'user'));
+        $komentars = KomentarFoto::where('fotoid', $id)->with('user')->latest()->get();
+        return view('componens.detail-foto', compact('photo', 'user', 'komentars'));
     }
 
 
@@ -104,15 +112,65 @@ class FotoController extends Controller
         $photo->save();
 
         // Redirect kembali ke halaman yang sesuai atau tampilkan pesan sukses
-        return redirect()->route('home', ['id' => $id])->with('success', 'Foto berhasil diperbarui');
+        return redirect()->route('photo.detail', ['id' => $id])->with('success', 'Foto berhasil diperbarui');
     }
 
 
-    public function destroy(Foto $foto)
+    public function destroy($id)
     {
-        $foto->delete();
+        $photo = Foto::findOrFail($id);
 
-        return redirect()->route('fotos.index')
-            ->with('success', 'Foto deleted successfully');
+        // Pastikan pengguna yang sedang login adalah pemilik foto
+        if (Auth::id() !== $photo->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Hapus foto dari database
+        $photo->delete();
+
+        // Redirect ke halaman yang sesuai setelah penghapusan
+        return redirect()->route('home')->with('success', 'Foto berhasil dihapus.');
+    }
+
+
+    public function toggleLike($photoId)
+    {
+        $photo = Foto::findOrFail($photoId);
+        $userId = auth()->id();
+
+        if ($photo->likes()->where('userid', $userId)->exists()) {
+            // Unlike jika sudah dilike sebelumnya
+            $photo->likes()->where('userid', $userId)->delete();
+            $message = 'Unlike berhasil';
+        } else {
+            // Like jika belum dilike sebelumnya
+            $photo->likes()->create(['userid' => $userId]);
+            $message = 'Like berhasil';
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    public function kirimKomentar(Request $request, $id)
+    {
+        // Cek apakah pengguna sudah login
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu untuk mengomentari foto.');
+        }
+
+        $request->validate([
+            'komentar' => 'required|string',
+        ]);
+
+        // Membuat komentar baru
+        $komentar = new KomentarFoto();
+        $komentar->fotoid = $id;
+        $komentar->userid = auth()->id();
+        $komentar->isikomentar = $request->komentar;
+        $komentar->tanggalkomentar = now();
+        $komentar->save();
+
+        return redirect()->back()->with('success', 'Komentar berhasil dikirim');
     }
 }
+

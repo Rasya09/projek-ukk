@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Foto;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -34,10 +35,22 @@ class UserController extends Controller
             ->with('success', 'User created successfully.');
     }
 
-    public function show(User $user)
+    public function show($id)
     {
-        return view('users.show', compact('user'));
+        // Cari pengguna berdasarkan ID
+        $user = User::findOrFail($id);
+
+        // Ambil semua foto yang dimiliki oleh pengguna ini
+        $fotos = Foto::where('user_id', $id)->get();
+
+        // Ambil daftar album milik pengguna
+        $albums = $user->albums;
+
+        // Tampilkan halaman detail profil dengan daftar foto pengguna
+        return view('page.user.detail', compact('user', 'fotos'));
     }
+
+
 
     public function edit(User $user)
     {

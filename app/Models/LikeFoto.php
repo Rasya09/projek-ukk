@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class LikeFoto extends Model
 {
     use HasFactory;
+
+    protected $table = 'likefoto';
+
     protected $fillable = ['fotoid', 'userid', 'tanggallike'];
 
     public function foto()
